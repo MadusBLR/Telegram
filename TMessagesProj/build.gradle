@@ -95,7 +95,7 @@ android {
             jniDebuggable true
             signingConfig signingConfigs.debug
             applicationIdSuffix ".beta"
-            minifyEnabled false
+            minifyEnabled true
             shrinkResources false
             multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -302,15 +302,18 @@ android {
     defaultConfig.versionCode = 2462
 
     applicationVariants.all { variant ->
+        def buildType = variant.buildType.name
+
         variant.outputs.all { output ->
-            outputFileName = "app.apk"
+            def flavor = variant.productFlavors.get(0).name
+            outputFileName = flavor+buildType+".apk"
             output.versionCodeOverride = defaultConfig.versionCode * 10 + variant.productFlavors.get(0).abiVersionCode
         }
     }
 
     variantFilter { variant ->
         def names = variant.flavors*.name
-        if (variant.buildType.name != "release" && !names.contains("afat")) {
+        if (variant.buildType.name != "debug" && variant.buildType.name != "release" && !names.contains("afat")) {
             setIgnore(true)
         }
     }
